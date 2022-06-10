@@ -1,18 +1,30 @@
-img = "";
+console.log("s");
+
 status = "";
 objects = [];
 
+function preload() {
+
+}
+
 function setup() {
-    canvas = createCanvas(640, 420);
+    canvas = createCanvas(380, 380);
     canvas.center();
+    video = createCapture(VIDEO);
+    video.size(380, 380);
+    video.hide();
+}
+
+function start() {
     objectDetector = ml5.objectDetector('cocossd', modelLoaded);
     document.getElementById("status").innerHTML = "Status : Finding Random Objects in the room that nobody asked me to find and I am just doing ti to try and amuse myslef with the little amount of brain cells that I have left (Thanks for reading this)";
 }
 
+
 function modelLoaded() {
     console.log("Model Loaded?")
     status = true;
-    objectDetector.detect(img, gotResults);
+    objectDetector.detect(video, gotResults);
 }
 
 function gotResults(error, results) {
@@ -23,22 +35,25 @@ function gotResults(error, results) {
     objects = results;
 }
 
-function preload() {
-    img = loadImage('dog_cate.jpg');
-}
-
 function draw() {
-    image(img, 0, 0, 640, 420);
+    image(video, 0, 0, 380, 380);
 
     if (status != "") {
+
+        r = random(255);
+        g = random(255);
+        b = random(255);
+
+        objectDetector.detect(video, gotResults);
         for (i = 0; i < objects.length; i++) {
             document.getElementById("status").innerHTML = "Status : Object Detected";
+            document.getElementById("number_of_objects").innerHTML = "Number of Objects Detected are : " + objects.length;
 
-            fill("#FF0000");
+            fill(r, g, b);
             percent = floor(objects[i].confidence * 100);
             text(objects[i].label + " " + percent + "%", objects[i].x, objects[i].y);
             noFill();
-            stroke("#FF0000");
+            stroke(r, g, b);
             rect(objects[i].x + 15, objects[i].y + 15, objects[i].width, objects[i].height);
         }
     }
